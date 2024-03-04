@@ -3,21 +3,21 @@ package com.example.cloud_tracker.configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-
-import com.example.cloud_tracker.filter.CsrfCookieFilter;
+import com.example.cloud_tracker.service.UserDetailsServiceImpl;
 import com.example.cloud_tracker.filter.JwtFilter;
 
 /*
@@ -33,12 +33,11 @@ import com.example.cloud_tracker.filter.JwtFilter;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private JwtFilter jwtFilter;
+    private final JwtFilter jwtFilter;
 
-    @Autowired 
-    private AuthenticationProvider authenticationProvider;
-    
+    public SecurityConfig(JwtFilter jwtFilter) {
+        this.jwtFilter = jwtFilter;
+    }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         
@@ -46,20 +45,36 @@ public class SecurityConfig {
 
         http
         .cors(cors -> cors.configurationSource(new CorsConfig()))
+//
+//        // i put the csrf config in the csrfconfig class and i will call it here
+//        .csrf((csrf) -> csrf.getClass().equals(CsrfConfig.class));
 
-        // i put the csrf config in the csrfconfig class and i will call it here
-        .csrf((csrf) -> csrf.getClass().equals(CsrfConfig.class))
+                .authorizeHttpRequests((authz) -> authz
+                        .requestMatchers("/").permitAll()
+                .anyRequest().authenticated()
 
-        .authorizeHttpRequests((authz) -> authz
-                .anyRequest().permitAll())
-        .authorizeHttpRequests(requests -> requests
-                .anyRequest()
-                .authenticated())
-        .sessionManagement(management -> management
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        ).csrf(AbstractHttpConfigurer::disable);
+//        .sessionManagement(management -> management
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .authenticationProvider(authenticationProvider())
+//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService());
+        provider.setPasswordEncoder(bCryptPasswordEncoder());
+        return provider;
+    }
 
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return new UserDetailsServiceImpl();
+    }
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }

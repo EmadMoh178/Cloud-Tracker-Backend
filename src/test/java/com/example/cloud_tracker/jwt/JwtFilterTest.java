@@ -41,7 +41,9 @@ public class JwtFilterTest {
     public void setUp() {
         jwtService = mock(JwtService.class);
         userDetailsService = mock(UserDetailsService.class);
-        jwtFilter = new JwtFilter(jwtService, userDetailsService);
+        jwtFilter = new JwtFilter();
+        jwtFilter.setJwtService(jwtService);
+        jwtFilter.setUserDetailsService(userDetailsService);
     }
     
     @Test
