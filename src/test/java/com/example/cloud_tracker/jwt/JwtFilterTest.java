@@ -4,6 +4,7 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 
+import init.UserInit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +19,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.example.cloud_tracker.filter.JwtFilter;
-import com.example.cloud_tracker.init.UserInit;
 import com.example.cloud_tracker.service.JwtService;
 
 import jakarta.servlet.FilterChain;

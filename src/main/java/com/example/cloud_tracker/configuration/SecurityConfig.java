@@ -53,11 +53,11 @@ public class SecurityConfig {
                         .requestMatchers("/").permitAll()
                 .anyRequest().authenticated()
 
-        ).csrf(AbstractHttpConfigurer::disable);
-//        .sessionManagement(management -> management
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .authenticationProvider(authenticationProvider())
-//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        ).csrf(AbstractHttpConfigurer::disable)
+        .sessionManagement(management -> management
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
     @Bean
