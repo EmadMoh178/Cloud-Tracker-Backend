@@ -61,12 +61,12 @@ public class SecurityConfig {
                     oath2.successHandler((request, response, authentication) -> {
                         response.sendRedirect("/welcome.html");
                     });
-                })
-                .csrf(AbstractHttpConfigurer::disable);
-       .sessionManagement(management -> management
-               .authenticationProvider(authenticationProvider())
-               .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-               .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                });
+//                .csrf(AbstractHttpConfigurer::disable);
+//       .sessionManagement(management -> management
+//               .authenticationProvider(authenticationProvider())
+//               .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+//               .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         return http.build();
     }
     @Bean
