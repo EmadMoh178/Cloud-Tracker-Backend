@@ -63,10 +63,10 @@ public class SecurityConfig {
                     });
                 })
                 .csrf(AbstractHttpConfigurer::disable);
-//        .sessionManagement(management -> management
-//                .authenticationProvider(authenticationProvider())
-//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+       .sessionManagement(management -> management
+               .authenticationProvider(authenticationProvider())
+               .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+               .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         return http.build();
     }
     @Bean
