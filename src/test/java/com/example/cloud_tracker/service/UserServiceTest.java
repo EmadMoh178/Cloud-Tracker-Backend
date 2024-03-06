@@ -80,4 +80,19 @@ public class UserServiceTest {
         Optional<User> userOptional = userService.getUserByEmail(userDTO.getEmail());
         Assertions.assertEquals(userOptional.get().getEmail(), userDTO.getEmail());
     }
+
+    @Test
+    public void saveProfileImageSuccessTest(){
+        UserDTO userDTO = UserDTO.builder()
+                .email("test@test.com")
+                .password("password")
+                .build();
+
+        User user = new User(userDTO);
+        when(userRepository.findByEmail(userDTO.getEmail())).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+
+        userService.saveProfileImage(userDTO.getEmail(), "image");
+        Assertions.assertEquals(user.getImage(), "image");
+    }
 }

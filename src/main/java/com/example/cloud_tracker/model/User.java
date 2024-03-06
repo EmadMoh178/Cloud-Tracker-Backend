@@ -27,10 +27,7 @@ public class User implements UserDetails {
     private String email;
     private String password;
     private String name;
-    @Lob
-    @Nullable
-    private byte[] image;
-
+    private String image;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Nullable
     private List<Role> roles;

@@ -8,7 +8,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -54,8 +53,8 @@ public class UserService implements UserDetailsService {
         Optional<User> userOptional = userRepository.findByEmail(userDTO.getEmail());
         if (userOptional.isPresent()
                 && bCryptPasswordEncoder.matches(userDTO.getPassword(), userOptional.get().getPassword())){
-            return new JwtResponse(userOptional.get().getEmail(),
-                    jwtService.generateToken(userOptional.get()));
+            return new JwtResponse(jwtService.generateToken(userOptional.get()),
+                    jwtService.generateRefreshToken(userOptional.get()));
         }
         throw new IllegalArgumentException("Invalid credentials");
     }
@@ -65,5 +64,9 @@ public class UserService implements UserDetailsService {
                 -> new UsernameNotFoundException("User not found")));
     }
 
-
+    public void saveProfileImage(String email, String image) {
+        User user = getUserByEmail(email).get();
+        user.setImage(image);
+        userRepository.save(user);
+    }
 }
