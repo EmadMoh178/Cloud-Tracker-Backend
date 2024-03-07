@@ -49,7 +49,8 @@ public class SecurityConfig {
 //        .csrf((csrf) -> csrf.getClass().equals(CsrfConfig.class));
 
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/", "/error", "/webjars/**", "/index.html").permitAll()
+                        .requestMatchers("/", "/error", "/webjars/**", "/index.html", "/signup"
+                                , "/signin").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oath2 ->{
                     oath2.successHandler((request, response, authentication) -> {
@@ -57,7 +58,7 @@ public class SecurityConfig {
                     });
                 })
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
