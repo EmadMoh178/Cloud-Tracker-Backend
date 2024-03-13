@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
-
 @RestController
 public class UserController {
 
@@ -25,22 +23,22 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body("Test");
     }
     @PostMapping("/signup")
-    public ResponseEntity<Object> signup(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<User> signup(@RequestBody UserDTO userDTO) {
         try {
-            Optional<User> user = userService.register(userDTO);
+            User user = userService.register(userDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(user);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
     // Todo : Invalid endpoint, authenticated endpoints shouldn't be redirected to gh login page
     @PostMapping("/signin")
-    public ResponseEntity<Object> login(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<JwtResponse> login(@RequestBody UserDTO userDTO) {
         try {
             JwtResponse jwtResponse = userService.login(userDTO);
             return ResponseEntity.status(HttpStatus.OK).body(jwtResponse);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
 }

@@ -30,7 +30,7 @@ public class User implements UserDetails {
     private String image;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Nullable
-    private List<Role> roles;
+    private List<IAMRole> roles;
 
     public User(UserDTO userDTO){
         this.email = userDTO.getEmail();

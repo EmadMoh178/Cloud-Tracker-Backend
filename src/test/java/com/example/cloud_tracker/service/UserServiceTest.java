@@ -32,8 +32,6 @@ public class UserServiceTest {
     @Mock
     private JwtService jwtService;
     @Mock
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-    @Mock
     private UserRepository userRepository;
     @InjectMocks
     private UserService userService;
@@ -60,7 +58,7 @@ public class UserServiceTest {
                 .build();
 
         User user = new User(userDTO);
-        when(userRepository.findByEmail(userDTO.getEmail())).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(userDTO.getEmail())).thenReturn(user);
         when(jwtService.generateToken(user)).thenReturn("token");
 
         Assertions.assertEquals(user.getEmail(), userDTO.getEmail());
@@ -75,10 +73,10 @@ public class UserServiceTest {
                 .build();
 
         User user = new User(userDTO);
-        when(userRepository.findByEmail(userDTO.getEmail())).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(userDTO.getEmail())).thenReturn(user);
 
-        Optional<User> userOptional = userService.getUserByEmail(userDTO.getEmail());
-        Assertions.assertEquals(userOptional.get().getEmail(), userDTO.getEmail());
+        User found = userService.findUserByEmail(userDTO.getEmail());
+        Assertions.assertEquals(found.getEmail(), userDTO.getEmail());
     }
 
     @Test
@@ -89,7 +87,7 @@ public class UserServiceTest {
                 .build();
 
         User user = new User(userDTO);
-        when(userRepository.findByEmail(userDTO.getEmail())).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(userDTO.getEmail())).thenReturn(user);
         when(userRepository.save(user)).thenReturn(user);
 
         userService.saveProfileImage(userDTO.getEmail(), "image");

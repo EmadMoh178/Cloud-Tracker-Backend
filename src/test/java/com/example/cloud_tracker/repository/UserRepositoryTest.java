@@ -22,10 +22,10 @@ public class UserRepositoryTest {
         User user = UserInit.createUser();
         userRepository.save(user);
 
-        Optional<User> found = userRepository.findByEmail(user.getEmail());
+        User found = userRepository.findByEmail(user.getEmail());
+        Assertions.assertThat(found != null);
 
-        Assertions.assertThat(found).isPresent();
-        Assertions.assertThat(found.get().getEmail()).isEqualTo(user.getEmail());
+        Assertions.assertThat(found.getEmail()).isEqualTo(user.getEmail());
     }
 
     @Test
@@ -33,10 +33,11 @@ public class UserRepositoryTest {
         User user = UserInit.createUser();
         userRepository.save(user);
 
-        Optional<User> found = userRepository.findById(user.getId());
+        User found = userRepository.findById(user.getId());
 
-        Assertions.assertThat(found).isPresent();
-        Assertions.assertThat(found.get().getId()).isEqualTo(user.getId());
+        Assertions.assertThat(found != null);
+
+        Assertions.assertThat(found.getId()).isEqualTo(user.getId());
     }
 
 }

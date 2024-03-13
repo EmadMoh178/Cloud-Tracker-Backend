@@ -30,42 +30,45 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByEmail(username);
-        return user.orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.findByEmail(username);
+        if (user == null)
+            throw new UsernameNotFoundException("User not found");
+        return user;
     }
 
-    public Optional<User> register(@NonNull UserDTO userDTO) {
-        if (userRepository.findByEmail(userDTO.getEmail()).isPresent()){
+    public User register(@NonNull UserDTO userDTO) {
+        if (userRepository.findByEmail(userDTO.getEmail()) != null){
             throw new IllegalArgumentException("User already exists");
         }
 
         User user = new User(userDTO);
         user.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
         try {
-            return Optional.of(userRepository.save(user));
+            return userRepository.save(user);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return Optional.empty();
+            throw new IllegalArgumentException("Error occurred while saving user");
         }
     }
 
     public JwtResponse login(@NonNull UserDTO userDTO) {
-        Optional<User> userOptional = userRepository.findByEmail(userDTO.getEmail());
-        if (userOptional.isPresent()
-                && bCryptPasswordEncoder.matches(userDTO.getPassword(), userOptional.get().getPassword())){
-            return new JwtResponse(jwtService.generateToken(userOptional.get()),
-                    jwtService.generateRefreshToken(userOptional.get()));
+        User user = userRepository.findByEmail(userDTO.getEmail());
+        if (user != null
+                && bCryptPasswordEncoder.matches(userDTO.getPassword(), user.getPassword())){
+            return new JwtResponse(jwtService.generateToken(user),
+                    jwtService.generateRefreshToken(user));
         }
         throw new IllegalArgumentException("Invalid credentials");
     }
 
-    public Optional<User> getUserByEmail(String email) {
-        return Optional.ofNullable(userRepository.findByEmail(email).orElseThrow(()
-                -> new UsernameNotFoundException("User not found")));
+    public User findUserByEmail(String email) {
+        if(userRepository.findByEmail(email) == null){
+            throw new IllegalArgumentException("User not found");
+        }
+        return userRepository.findByEmail(email);
     }
 
     public void saveProfileImage(String email, String image) {
-        User user = getUserByEmail(email).get();
+        User user = findUserByEmail(email);
         user.setImage(image);
         userRepository.save(user);
     }
