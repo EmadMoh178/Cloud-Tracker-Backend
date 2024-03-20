@@ -1,10 +1,14 @@
 package com.example.cloud_tracker.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "roles")
 public class IAMRole {
     @Id

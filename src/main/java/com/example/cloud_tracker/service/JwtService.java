@@ -10,6 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -32,17 +35,16 @@ public class JwtService {
     }
 
     
-    private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    public Boolean isTokenExpired(String token) {
+        DecodedJWT jwt = JWT.decode(token);
+        return jwt.getExpiresAt().before(new Date());
     }
     
-    public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
     
     public Boolean validateToken(String token, UserDetails userDetails) {
+        if(isTokenExpired(token)) return false;
         final String username = extractUserName(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        return (username.equals(userDetails.getUsername()));
     }
     
     

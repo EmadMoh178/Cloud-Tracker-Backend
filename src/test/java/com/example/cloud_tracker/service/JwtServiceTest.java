@@ -18,6 +18,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+import com.example.cloud_tracker.model.User;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -50,13 +52,27 @@ public class JwtServiceTest {
         String token = jwtService.generateToken(user);
         assert(jwtService.validateToken(token, user));
     }
+    
+    @Test
+    void validateTokenTestFail(){
+        UserDetails user = UserInit.createUser();
+        UserDetails user2 = new User(1, "tst@test.com", "test", "test", null, null);
+        String token = jwtService.generateToken(user);
+        assert(!jwtService.validateToken(token, user2));
+    }
 
     @Test
-    void ExtractExpirationTest() {
+    void validateTokenTestExpired(){
         UserDetails user = UserInit.createUser();
-        String token = jwtService.generateToken(user);
-        Long time = System.currentTimeMillis() + 1000 * 60 * 60 * 24;
-        assertEquals(time - time % 1000 , jwtService.extractExpiration(token).getTime());
+        Map<String , Object>extraClaims = new HashMap<>();
+        String token = Jwts.builder()
+        .setClaims(extraClaims)
+        .setSubject(user.getUsername())
+        .setIssuedAt(new Date (System.currentTimeMillis()))
+        .setExpiration(new Date (System.currentTimeMillis() - 1000))
+        .signWith(jwtService.getSigningKey(),SignatureAlgorithm.HS256)
+        .compact();
+        assert(!jwtService.validateToken(token, user));
     }
 
     @Test
