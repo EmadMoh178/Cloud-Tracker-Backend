@@ -12,10 +12,21 @@ import lombok.NoArgsConstructor;
 @Table(name = "roles")
 public class IAMRole {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private String accountID;
+    private String roleName;
+    private String arn;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    public IAMRole(String accountID, String roleName, int userId) {
+        this.accountID = accountID;
+        this.roleName = roleName;
+        this.userId = userId;
+    }
+
+    @Column(name = "user_id")
+    private int userId;
+
+    @PrePersist
+    private void setArn() {
+        this.arn = "arn:aws:iam::" + accountID + ":role/" + roleName;
+    }
 }
