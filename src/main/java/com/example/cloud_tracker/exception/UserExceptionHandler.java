@@ -1,4 +1,5 @@
 package com.example.cloud_tracker.exception;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -49,5 +50,4 @@ public class UserExceptionHandler {
     // the user will get a method argument not valid exception
     // and the message will be "email: invalid email"
     // and the status will be 400
-
 }
