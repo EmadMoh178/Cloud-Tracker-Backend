@@ -1,3 +1,7 @@
+# JaCoCo Test Coverage
+![JaCoCo Coverage](./badges/jacoco.svg)
+![JaCoCo Branches](./badges/branches.svg)
+
 # Docker Guide
 
 To utilize the Docker for Cloud Tracker, follow these steps:
