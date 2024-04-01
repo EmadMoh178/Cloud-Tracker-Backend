@@ -17,10 +17,9 @@ public class UserService implements UserDetailsService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtService jwtService;
 
-
     public UserService(UserRepository userRepository,
-                       BCryptPasswordEncoder bCryptPasswordEncoder,
-                       JwtService jwtService) {
+            BCryptPasswordEncoder bCryptPasswordEncoder,
+            JwtService jwtService) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.jwtService = jwtService;
@@ -35,32 +34,27 @@ public class UserService implements UserDetailsService {
     }
 
     public User register(@NonNull UserDTO userDTO) {
-        if (userRepository.findByEmail(userDTO.getEmail()) != null){
+        if (userRepository.findByEmail(userDTO.getEmail()) != null) {
             throw new IllegalArgumentException("User already exists");
         }
         userDTO.setEmail(userDTO.getEmail().toLowerCase());
         User user = new User(userDTO);
         user.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
-        try {
-            return userRepository.save(user);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Error occurred while saving user");
-        }
+
+        return userRepository.save(user);
     }
 
     public JwtResponse login(@NonNull UserDTO userDTO) {
         userDTO.setEmail(userDTO.getEmail().toLowerCase());
         User user = userRepository.findByEmail(userDTO.getEmail());
-        if (user != null
-                && bCryptPasswordEncoder.matches(userDTO.getPassword(), user.getPassword())){
-            return new JwtResponse(jwtService.generateToken(user),
-                    jwtService.generateRefreshToken(user));
+        if (user != null && bCryptPasswordEncoder.matches(userDTO.getPassword(), user.getPassword())) {
+            return new JwtResponse(jwtService.generateToken(user), jwtService.generateRefreshToken(user));
         }
         throw new IllegalArgumentException("Invalid credentials");
     }
 
     public User findUserByEmail(String email) {
-        if(userRepository.findByEmail(email) == null){
+        if (userRepository.findByEmail(email) == null) {
             throw new IllegalArgumentException("User not found");
         }
         return userRepository.findByEmail(email);

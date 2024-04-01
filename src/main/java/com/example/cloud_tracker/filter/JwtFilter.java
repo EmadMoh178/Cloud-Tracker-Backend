@@ -36,7 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         //"/", "/error", "/webjars/**", "/index.html", "/signup", "/signin"
         return path.startsWith("/webjars") || path.startsWith("/index.html") || path.startsWith("/signup") || path.startsWith("/signin") ||
-                path.equals("/") || path.equals("/welcome.html");
+                path.equals("/") || path.equals("/welcome.html") || path.equals("/blog") || path.equals("/blog/all");
     }
 
     @Override

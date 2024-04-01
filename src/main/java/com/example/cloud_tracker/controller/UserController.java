@@ -17,29 +17,25 @@ public class UserController {
     private final UserService userService;
 
     public UserController(UserService userService) {
-            this.userService = userService;
-        }
+        this.userService = userService;
+    }
+
     @PostMapping("/test")
     public ResponseEntity<Object> test() {
         return ResponseEntity.status(HttpStatus.OK).body("Test");
     }
+
     @PostMapping("/signup")
     public ResponseEntity<User> signup(@RequestBody @Valid UserDTO userDTO) {
-        try {
-            User user = userService.register(userDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(user);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+        User user = userService.register(userDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
-    // Todo : Invalid endpoint, authenticated endpoints shouldn't be redirected to gh login page
+
+    // Todo : Invalid endpoint, authenticated endpoints shouldn't be redirected to
+    // gh login page
     @PostMapping("/signin")
     public ResponseEntity<JwtResponse> login(@RequestBody UserDTO userDTO) {
-        try {
-            JwtResponse jwtResponse = userService.login(userDTO);
-            return ResponseEntity.status(HttpStatus.OK).body(jwtResponse);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
+        JwtResponse jwtResponse = userService.login(userDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(jwtResponse);
     }
 }
