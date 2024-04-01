@@ -33,7 +33,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class BlogServiceTest {
 
     @Mock

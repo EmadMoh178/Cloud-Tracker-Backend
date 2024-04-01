@@ -32,7 +32,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private UserDetailsServiceImpl userDetailsService;
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+    public boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
         //"/", "/error", "/webjars/**", "/index.html", "/signup", "/signin"
         return path.startsWith("/webjars") || path.startsWith("/index.html") || path.startsWith("/signup") || path.startsWith("/signin") ||

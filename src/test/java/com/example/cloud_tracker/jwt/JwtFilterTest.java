@@ -1,5 +1,7 @@
 package com.example.cloud_tracker.jwt;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -12,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -47,6 +50,33 @@ public class JwtFilterTest {
         jwtFilter.setUserDetailsService(userDetailsService);
     }
     
+
+    @Test
+    public void testShouldNotFilter() throws ServletException {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        
+        request.setRequestURI("/test");
+        assertFalse(jwtFilter.shouldNotFilter(request));
+        
+        request.setRequestURI("/webjars/some-resource");
+        assertTrue(jwtFilter.shouldNotFilter(request));
+        
+        request.setRequestURI("/index.html");
+        assertTrue(jwtFilter.shouldNotFilter(request));
+        
+        request.setRequestURI("/signup");
+        assertTrue(jwtFilter.shouldNotFilter(request));
+        
+        request.setRequestURI("/signin");
+        assertTrue(jwtFilter.shouldNotFilter(request));
+        
+        request.setRequestURI("/");
+        assertTrue(jwtFilter.shouldNotFilter(request));
+        
+        request.setRequestURI("/welcome.html");
+        assertTrue(jwtFilter.shouldNotFilter(request));
+    }
+
     @Test
     void testDoFilterInternal_ValidToken() throws ServletException, IOException {
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -82,6 +112,39 @@ public class JwtFilterTest {
         when(request.getHeader("Authorization")).thenReturn(validToken);
         jwtFilter.doFilterInternal(request, response, filterChain);
         verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT Token does not begin with Bearer String");
+        verifyNoInteractions(filterChain);
+    }
+
+    @Test
+    void testDoFilterInternal_NULLToken() throws ServletException, IOException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        FilterChain filterChain = mock(FilterChain.class);
+        UserDetails user = UserInit.createUser();
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null,
+                user.getAuthorities());
+        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+        String validToken = null;
+        when(request.getHeader("Authorization")).thenReturn(validToken);
+        jwtFilter.doFilterInternal(request, response, filterChain);
+        verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT Token does not begin with Bearer String");
+        verifyNoInteractions(filterChain);
+    }
+
+    @Test
+    void testDoFilterInternal_NULLUserEmail() throws ServletException, IOException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        FilterChain filterChain = mock(FilterChain.class);
+        UserDetails user = UserInit.createUser();
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null,
+                user.getAuthorities());
+        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+        String validToken = "Bearer test";
+        when(request.getHeader("Authorization")).thenReturn(validToken);
+        jwtFilter.doFilterInternal(request, response, filterChain);
         verifyNoInteractions(filterChain);
     }
 
