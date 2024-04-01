@@ -12,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -44,16 +45,13 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testSignup_InternalServerError() {
+    public void testSignup_RuntimeException() {
         UserDTO userDTO = new UserDTO();
         userDTO.setEmail("test@example.com");
         userDTO.setPassword("password");
         when(userService.register(userDTO)).thenThrow(new RuntimeException());
 
-        ResponseEntity<User> responseEntity = userController.signup(userDTO);
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
-        assertEquals(null, responseEntity.getBody());
+        assertThrows(RuntimeException.class, () -> userController.signup(userDTO));
     }
 
     @Test
@@ -77,10 +75,7 @@ public class UserControllerTest {
         userDTO.setPassword("password");
         when(userService.login(userDTO)).thenThrow(new IllegalArgumentException());
 
-        ResponseEntity<JwtResponse> responseEntity = userController.login(userDTO);
-
-        assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
-        assertEquals(null, responseEntity.getBody());
+        assertThrows(IllegalArgumentException.class, () -> userController.login(userDTO));
     }
 }
 
