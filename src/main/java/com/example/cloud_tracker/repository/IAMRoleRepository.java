@@ -7,7 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface IAMRoleRepository extends JpaRepository<IAMRole, Long>{
+public interface IAMRoleRepository extends JpaRepository<IAMRole, String> {
     IAMRole findByAccountID(String accountID);
+
     List<IAMRole> findByUserId(int id);
 }
