@@ -1,15 +1,13 @@
 package com.example.cloud_tracker.service;
 
+import com.example.cloud_tracker.model.Blog;
+import com.example.cloud_tracker.repository.BlogRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import com.example.cloud_tracker.model.Blog;
-import com.example.cloud_tracker.repository.BlogRepository;
 
 @Service
 public class BlogService {
@@ -34,5 +32,8 @@ public class BlogService {
             blogs.add(b.getHtmlContent());
         }
         return blogs;
+    }
+    public Optional <Blog> getBlogById (int id){
+        return blogRepository.findById(id);
     }
 }
