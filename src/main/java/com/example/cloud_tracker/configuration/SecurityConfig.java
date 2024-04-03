@@ -1,5 +1,9 @@
 package com.example.cloud_tracker.configuration;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
+import com.example.cloud_tracker.filter.JwtFilter;
+import com.example.cloud_tracker.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -11,12 +15,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import org.springframework.security.config.http.SessionCreationPolicy;
-import com.example.cloud_tracker.service.UserDetailsServiceImpl;
-import com.example.cloud_tracker.filter.JwtFilter;
-
-import static org.springframework.security.config.Customizer.withDefaults;
 
 /*
  * the explaination of the crsf and how it work is :
@@ -49,7 +47,7 @@ public class SecurityConfig {
 //        .csrf((csrf) -> csrf.getClass().equals(CsrfConfig.class));
 
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/", "/error", "/webjars/**", "/index.html", "/signup","/blog","/blog/all"
+                        .requestMatchers("/", "/error", "/webjars/**", "/index.html", "/signup","/blog","/blog/all","/blog/**"
                                 , "/signin").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oath2 ->{
