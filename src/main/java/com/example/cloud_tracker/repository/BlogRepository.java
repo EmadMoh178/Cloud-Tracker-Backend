@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 import com.example.cloud_tracker.model.Blog;
 
 @Repository
-public interface BlogRepository extends JpaRepository<Blog, Integer> {
-}
+public interface BlogRepository extends JpaRepository<Blog, Integer> {}

@@ -1,7 +1,8 @@
 package com.example.cloud_tracker.model;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 public class JwtResponseTest {
 

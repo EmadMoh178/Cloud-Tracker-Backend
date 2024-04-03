@@ -1,5 +1,12 @@
 package com.example.cloud_tracker.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import com.example.cloud_tracker.dto.UserDTO;
+import com.example.cloud_tracker.model.JwtResponse;
+import com.example.cloud_tracker.model.User;
+import com.example.cloud_tracker.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -8,14 +15,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import com.example.cloud_tracker.dto.UserDTO;
-import com.example.cloud_tracker.model.JwtResponse;
-import com.example.cloud_tracker.model.User;
-import com.example.cloud_tracker.repository.UserRepository;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 public class UserServiceTest {
 
