@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDTO {
-    @NotBlank(message = "Email is mandatory")
-    @Email(message = "Provide a valid email")
-    private String email;
+  @NotBlank(message = "Email is mandatory")
+  @Email(message = "Provide a valid email")
+  private String email;
 
-    @NotBlank(message = "Password is mandatory")
-    private String password;
-    private String name;
+  @NotBlank(message = "Password is mandatory")
+  private String password;
 
+  private String name;
 }

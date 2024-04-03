@@ -1,87 +1,89 @@
 package com.example.cloud_tracker.service;
 
-import org.junit.jupiter.api.Test;
-import com.example.cloud_tracker.dto.UserDTO;
-import com.example.cloud_tracker.model.Blog;
-import com.example.cloud_tracker.model.User;
-import com.example.cloud_tracker.repository.BlogRepository;
-import com.example.cloud_tracker.repository.UserRepository;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.example.cloud_tracker.model.Blog;
+import com.example.cloud_tracker.repository.BlogRepository;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
+
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
 public class BlogServiceTest {
 
-    @Mock
-    private BlogRepository blogRepository;
+  @Mock private BlogRepository blogRepository;
 
-    @InjectMocks
-    private BlogService blogService;
+  @InjectMocks private BlogService blogService;
 
-    @Test
-    void testGetBlogs() {
+  @Test
+  void testGetBlogs() {
 
-        List<Blog> mockBlogs = new ArrayList<>();
-        mockBlogs.add(new Blog(1, "<html>blog1</html>"));
-        mockBlogs.add(new Blog(2, "<html>blog2</html>"));
+    List<Blog> mockBlogs = new ArrayList<>();
+    mockBlogs.add(new Blog(1, "<html>blog1</html>"));
+    mockBlogs.add(new Blog(2, "<html>blog2</html>"));
 
-        when(blogRepository.findAll()).thenReturn(mockBlogs);
+    when(blogRepository.findAll()).thenReturn(mockBlogs);
 
-        ArrayList<String> result = blogService.getBlogs();
+    ArrayList<String> result = blogService.getBlogs();
 
-        assertEquals(2, result.size());
-        assertEquals("<html>blog1</html>", result.get(0));
-        assertEquals("<html>blog2</html>", result.get(1));
+    assertEquals(2, result.size());
+    assertEquals("<html>blog1</html>", result.get(0));
+    assertEquals("<html>blog2</html>", result.get(1));
 
-        verify(blogRepository, times(1)).findAll();
-    }
+    verify(blogRepository, times(1)).findAll();
+  }
 
-    @Test
-    public void testSaveBlog() {
+  @Test
+  void testGetBlogById() {
+    List<Blog> mockBlogs = new ArrayList<>();
+    mockBlogs.add(new Blog(1, "htmlcontent1"));
 
-        String htmlContent = "<html>Test HTML Content</html>";
+    when(blogRepository.findById(1)).thenReturn(Optional.of(mockBlogs.get(0)));
 
-        when(blogRepository.save(any())).thenReturn(new Blog());
+    Optional<Blog> blog1 = blogRepository.findById(1);
+    assertTrue(blog1.isPresent());
+    assertEquals(1, blog1.get().getId());
+    assertEquals("htmlcontent1", blog1.get().getHtmlContent());
 
-        ResponseEntity<String> response = blogService.saveBlog(htmlContent);
+    verify(blogRepository, times(1)).findById(1);
+  }
 
-        verify(blogRepository, times(1)).save(any());
+  @Test
+  public void testSaveBlog() {
 
-        assertEquals("Blog saved successfully", response.getBody());
-        assertEquals(200, response.getStatusCode().value());
-    }
+    String htmlContent = "<html>Test HTML Content</html>";
 
-    @Test
-    public void testSaveBlogWithNullContent() {
+    when(blogRepository.save(any())).thenReturn(new Blog());
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> blogService.saveBlog(null));
+    ResponseEntity<String> response = blogService.saveBlog(htmlContent);
 
-        assertEquals("htmlContent cannot be null", exception.getMessage());
+    verify(blogRepository, times(1)).save(any());
 
-        verify(blogRepository, never()).save(any());
-    }
+    assertEquals("Blog saved successfully", response.getBody());
+    assertEquals(200, response.getStatusCode().value());
+  }
+
+  @Test
+  public void testSaveBlogWithNullContent() {
+
+    IllegalArgumentException exception =
+        assertThrows(IllegalArgumentException.class, () -> blogService.saveBlog(null));
+
+    assertEquals("htmlContent cannot be null", exception.getMessage());
+
+    verify(blogRepository, never()).save(any());
+  }
 }
