@@ -1,9 +1,5 @@
 package com.example.cloud_tracker.controller;
 
-import static org.junit.Assert.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
-
 import com.example.cloud_tracker.dto.UserDTO;
 import com.example.cloud_tracker.model.JwtResponse;
 import com.example.cloud_tracker.model.User;
@@ -15,6 +11,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 public class UserControllerTest {
 
@@ -76,6 +76,39 @@ public class UserControllerTest {
         when(userService.login(userDTO)).thenThrow(new IllegalArgumentException());
 
         assertThrows(IllegalArgumentException.class, () -> userController.login(userDTO));
+    }
+
+    @Test
+    public void testGetCurrentUserProfilePicture() {
+        String expectedProfilePicture = "img";
+        when(userService.getCurrentUserProfilePicture()).thenReturn(expectedProfilePicture);
+
+        ResponseEntity<String> response = userController.getCurrentUserProfilePicture();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedProfilePicture, response.getBody());
+    }
+
+    @Test
+    public void testGetCurrentUserName() {
+        String expectedUserName = "name";
+        when(userService.getCurrentUserName()).thenReturn(expectedUserName);
+
+        ResponseEntity<String> response = userController.getCurrentUserName();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedUserName, response.getBody());
+    }
+
+    @Test
+    public void testGetCurrentUserEmail() {
+        String expectedEmail = "test@example.com";
+        when(userService.getCurrentUserEmail()).thenReturn(expectedEmail);
+
+        ResponseEntity<String> response = userController.getCurrentUserEmail();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedEmail, response.getBody());
     }
 }
 
