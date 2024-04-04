@@ -5,6 +5,8 @@ import com.example.cloud_tracker.model.JwtResponse;
 import com.example.cloud_tracker.model.User;
 import com.example.cloud_tracker.repository.UserRepository;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,10 +19,9 @@ public class UserService implements UserDetailsService {
   private final BCryptPasswordEncoder bCryptPasswordEncoder;
   private final JwtService jwtService;
 
-  public UserService(
-      UserRepository userRepository,
-      BCryptPasswordEncoder bCryptPasswordEncoder,
-      JwtService jwtService) {
+  public UserService(UserRepository userRepository,
+                     BCryptPasswordEncoder bCryptPasswordEncoder,
+                     JwtService jwtService) {
     this.userRepository = userRepository;
     this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     this.jwtService = jwtService;
@@ -29,7 +30,8 @@ public class UserService implements UserDetailsService {
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     User user = userRepository.findByEmail(username);
-    if (user == null) throw new UsernameNotFoundException("User not found");
+    if (user == null)
+      throw new UsernameNotFoundException("User not found");
     return user;
   }
 
@@ -64,5 +66,26 @@ public class UserService implements UserDetailsService {
     User user = findUserByEmail(email);
     user.setImage(image);
     userRepository.save(user);
+  }
+
+  public User getCurrentUser() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+    return userRepository.findByEmail(userDetails.getUsername());
+  }
+
+  public String getCurrentUserProfilePicture() {
+    User currentUser = getCurrentUser();
+    return currentUser.getImage();
+  }
+
+  public String getCurrentUserName() {
+    User currentUser = getCurrentUser();
+    return currentUser.getName();
+  }
+
+  public String getCurrentUserEmail() {
+    User currentUser = getCurrentUser();
+    return currentUser.getEmail();
   }
 }

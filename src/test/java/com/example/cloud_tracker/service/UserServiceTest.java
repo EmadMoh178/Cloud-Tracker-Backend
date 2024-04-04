@@ -1,20 +1,27 @@
 package com.example.cloud_tracker.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.example.cloud_tracker.dto.UserDTO;
 import com.example.cloud_tracker.model.JwtResponse;
 import com.example.cloud_tracker.model.User;
 import com.example.cloud_tracker.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 
 public class UserServiceTest {
 
@@ -29,6 +36,7 @@ public class UserServiceTest {
 
     @InjectMocks
     private UserService userService;
+
 
     @BeforeEach
     void setUp() {
@@ -67,7 +75,7 @@ public class UserServiceTest {
         // Act
         User registeredUser = userService.register(userDTO);
 
-        
+
         verify(userRepository, times(1)).save(any(User.class));
     }
 
@@ -150,7 +158,6 @@ public class UserServiceTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.findUserByEmail(email));
         assertEquals("User not found", exception.getMessage());
     }
-    
 
     @Test
     public void testSaveProfileImage() {
@@ -164,5 +171,78 @@ public class UserServiceTest {
 
         verify(userRepository, times(1)).save(user);
         assertEquals(image, user.getImage());
+    }
+
+    @Test
+    public void testGetCurrentUser() {
+        // Mock UserDetails
+        UserDetails userDetails = new User(
+                new UserDTO("test@example.com", "password", null)
+        );
+
+        // Mock the SecurityContext
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+
+        // Mock UserRepository response
+        User expectedUser = new User(
+                new UserDTO("test@example.com", "password", null)
+        );
+        when(userRepository.findByEmail("test@example.com")).thenReturn(expectedUser);
+
+        //Assertion
+        User currentUser = userService.getCurrentUser();
+        assertEquals(expectedUser, currentUser);
+    }
+
+    @Test
+    void testGetCurrentUserName() {
+        // Mocking getCurrentUser() method
+        User currentUser = new User(
+                new UserDTO("test@example.com", "password", "name")
+        );
+
+        // Create a spy of UserService to partially mock it, allowing us to mock specific methods while keeping the rest intact
+        UserService userServiceSpy = Mockito.spy(userService);
+        Mockito.doReturn(currentUser).when(userServiceSpy).getCurrentUser();
+
+        // Testing getCurrentUserName() method
+        String name = userServiceSpy.getCurrentUserName();
+        assertEquals("name", name);
+    }
+
+    @Test
+    void testGetCurrentUserProfilePicture() {
+        // Mocking getCurrentUser() method
+        User currentUser = new User(
+                new UserDTO("test@example.com", "password", "name")
+        );
+        currentUser.setImage("img");
+
+        // Create a spy of UserService to partially mock it, allowing us to mock specific methods while keeping the rest intact
+        UserService userServiceSpy = Mockito.spy(userService);
+        Mockito.doReturn(currentUser).when(userServiceSpy).getCurrentUser();
+
+        // Testing getCurrentUserName() method
+        String img = userServiceSpy.getCurrentUserProfilePicture();
+        assertEquals("img", img);
+    }
+
+    @Test
+    void testGetCurrentUserEmail() {
+        // Mocking getCurrentUser() method
+        User currentUser = new User(
+                new UserDTO("test@example.com", "password", "name")
+        );
+
+        // Create a spy of UserService to partially mock it, allowing us to mock specific methods while keeping the rest intact
+        UserService userServiceSpy = Mockito.spy(userService);
+        Mockito.doReturn(currentUser).when(userServiceSpy).getCurrentUser();
+
+        // Testing getCurrentUserName() method
+        String email = userServiceSpy.getCurrentUserEmail();
+        assertEquals("test@example.com", email);
     }
 }
