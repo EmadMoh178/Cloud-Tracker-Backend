@@ -1,6 +1,7 @@
 package com.example.cloud_tracker.service;
 
 import com.example.cloud_tracker.dto.UserDTO;
+import com.example.cloud_tracker.dto.UserUpdateDTO;
 import com.example.cloud_tracker.model.JwtResponse;
 import com.example.cloud_tracker.model.User;
 import com.example.cloud_tracker.repository.UserRepository;
@@ -88,4 +89,19 @@ public class UserService implements UserDetailsService {
     User currentUser = getCurrentUser();
     return currentUser.getEmail();
   }
+  
+  public User editProfile(UserUpdateDTO updateDTO){
+    User user = getCurrentUser();
+    if (userRepository.findByEmail(updateDTO.getEmail()) != null 
+        && !user.getEmail().equals(updateDTO.getEmail())) {
+        throw new IllegalArgumentException("Email already exists");
+    }
+    user.setName(updateDTO.getName());
+    user.setEmail(updateDTO.getEmail());
+    user.setPassword(bCryptPasswordEncoder.encode(updateDTO.getPassword()));
+    user.setImage(updateDTO.getImage());
+    userRepository.save(user);
+    return user;
+   }
+
 }

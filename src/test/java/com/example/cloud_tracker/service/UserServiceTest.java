@@ -15,9 +15,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.example.cloud_tracker.dto.UserDTO;
+import com.example.cloud_tracker.dto.UserUpdateDTO;
 import com.example.cloud_tracker.model.JwtResponse;
 import com.example.cloud_tracker.model.User;
 import com.example.cloud_tracker.repository.UserRepository;
+
+import init.UserInit;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -245,4 +248,62 @@ public class UserServiceTest {
         String email = userServiceSpy.getCurrentUserEmail();
         assertEquals("test@example.com", email);
     }
+
+    @Test
+    public void testUpdateProfileSuccess(){
+        UserUpdateDTO userUpdateDTO = new UserUpdateDTO("test@gmail.com",
+        "12345",
+        "test",
+        "image.jpg");
+        User user = UserInit.createUser();
+
+        UserService userServiceSpy = Mockito.spy(userService);
+        Mockito.doReturn(user).when(userServiceSpy).getCurrentUser();
+
+        when(userRepository.findByEmail(userUpdateDTO.getEmail())).thenReturn(null);
+        when(bCryptPasswordEncoder.encode(userUpdateDTO.getPassword())).thenReturn(userUpdateDTO.getPassword());
+        
+        User actualUser = new User(1,userUpdateDTO.getEmail(),userUpdateDTO.getPassword(),userUpdateDTO.getName(),userUpdateDTO.getImage(),null);
+        User user2 = userServiceSpy.editProfile(userUpdateDTO);
+        assertEquals(actualUser, user2);
+    }
+
+    @Test
+    public void testUpdateProfileFixedEmail(){
+        UserUpdateDTO userUpdateDTO = new UserUpdateDTO("test@test.com",
+        "12345",
+        "test",
+        "image.jpg");
+        User user = UserInit.createUser();
+
+        UserService userServiceSpy = Mockito.spy(userService);
+        Mockito.doReturn(user).when(userServiceSpy).getCurrentUser();
+
+        when(userRepository.findByEmail(userUpdateDTO.getEmail())).thenReturn(user);
+        when(bCryptPasswordEncoder.encode(userUpdateDTO.getPassword())).thenReturn(userUpdateDTO.getPassword());
+        
+        User actualUser = new User(1,userUpdateDTO.getEmail(),userUpdateDTO.getPassword(),userUpdateDTO.getName(),userUpdateDTO.getImage(),null);
+        User user2 = userServiceSpy.editProfile(userUpdateDTO);
+        assertEquals(actualUser, user2);
+    }
+
+    @Test
+    public void testUpdateProfileFailed(){
+        UserUpdateDTO userUpdateDTO = new UserUpdateDTO("test@gmail.com",
+        "12345",
+        "test",
+        "image.jpg");
+        User user = UserInit.createUser();
+
+        UserService userServiceSpy = Mockito.spy(userService);
+        Mockito.doReturn(user).when(userServiceSpy).getCurrentUser();
+        
+        when(userRepository.findByEmail(userUpdateDTO.getEmail())).thenReturn(user);
+        when(bCryptPasswordEncoder.encode(userUpdateDTO.getPassword())).thenReturn(userUpdateDTO.getPassword());
+        
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userServiceSpy.editProfile(userUpdateDTO));
+        assertEquals("Email already exists", exception.getMessage());
+    }
+
+
 }

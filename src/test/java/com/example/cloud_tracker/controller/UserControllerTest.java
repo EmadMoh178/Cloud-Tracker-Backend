@@ -1,6 +1,7 @@
 package com.example.cloud_tracker.controller;
 
 import com.example.cloud_tracker.dto.UserDTO;
+import com.example.cloud_tracker.dto.UserUpdateDTO;
 import com.example.cloud_tracker.model.JwtResponse;
 import com.example.cloud_tracker.model.User;
 import com.example.cloud_tracker.service.UserService;
@@ -109,6 +110,19 @@ public class UserControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedEmail, response.getBody());
+    }
+
+    @Test
+    public void testEditProfileSuccess(){
+        UserUpdateDTO userUpdateDTO = new UserUpdateDTO("test@gmail.com",
+        "12345",
+        "test",
+        "image.jpg");
+        User user = new User(1, userUpdateDTO.getEmail(), userUpdateDTO.getPassword(), userUpdateDTO.getName(), userUpdateDTO.getImage(), null);
+        when(userService.editProfile(userUpdateDTO)).thenReturn(user);
+        ResponseEntity<User> responseEntity = userController.editProfile(userUpdateDTO);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(user, responseEntity.getBody());
     }
 }
 
