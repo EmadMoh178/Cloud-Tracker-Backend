@@ -1,7 +1,6 @@
 package com.example.cloud_tracker.service;
 
 import com.example.cloud_tracker.dto.UserDTO;
-import com.example.cloud_tracker.dto.UserUpdateDTO;
 import com.example.cloud_tracker.model.JwtResponse;
 import com.example.cloud_tracker.model.User;
 import com.example.cloud_tracker.repository.UserRepository;
@@ -90,7 +89,7 @@ public class UserService implements UserDetailsService {
     return currentUser.getEmail();
   }
   
-  public User editProfile(UserUpdateDTO updateDTO){
+  public User editProfile(UserDTO updateDTO){
     User user = getCurrentUser();
     if (userRepository.findByEmail(updateDTO.getEmail()) != null 
         && !user.getEmail().equals(updateDTO.getEmail())) {

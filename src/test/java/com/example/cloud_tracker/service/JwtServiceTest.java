@@ -151,21 +151,21 @@ public class JwtServiceTest {
     @Test
     public void testRevokeTokenSuccess() {
         when(request.getHeader("Authorization")).thenReturn("Bearer test");
-        jwtService.revokeToken(request);
+        jwtService.blackListToken(request);
         verify(blackListedTokensRepository).save(any(BlackListedTokens.class));
     }
 
     @Test
     public void testRevokeTokenFailNullHeader() {
         when(request.getHeader("Authorization")).thenReturn(null);
-        jwtService.revokeToken(request);
+        jwtService.blackListToken(request);
         verify(blackListedTokensRepository, never()).save(any());
     }
 
     @Test
     public void testRevokeTokenFailInvalidHeader() {
         when(request.getHeader("Authorization")).thenReturn("tesy");
-        jwtService.revokeToken(request);
+        jwtService.blackListToken(request);
         verify(blackListedTokensRepository, never()).save(any());
     }
     

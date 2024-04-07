@@ -1,7 +1,6 @@
 package com.example.cloud_tracker.controller;
 
 import com.example.cloud_tracker.dto.UserDTO;
-import com.example.cloud_tracker.dto.UserUpdateDTO;
 import com.example.cloud_tracker.model.JwtResponse;
 import com.example.cloud_tracker.model.User;
 import com.example.cloud_tracker.service.UserService;
@@ -114,7 +113,7 @@ public class UserControllerTest {
 
     @Test
     public void testEditProfileSuccess(){
-        UserUpdateDTO userUpdateDTO = new UserUpdateDTO("test@gmail.com",
+        UserDTO userUpdateDTO = new UserDTO("test@gmail.com",
         "12345",
         "test",
         "image.jpg");

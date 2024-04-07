@@ -68,7 +68,10 @@ public class SecurityConfig {
                .logout((logout) ->logout
                 .logoutUrl("/logout")
                 .addLogoutHandler(logoutHandler)
-                .logoutSuccessHandler((request,response,authentication)->SecurityContextHolder.clearContext())
+                .logoutSuccessHandler((request,response,authentication)->{
+                    SecurityContextHolder.clearContext();
+                    response.getWriter().write("Logout successful");
+                })
 
                );
         return http.build();

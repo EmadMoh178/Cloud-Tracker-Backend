@@ -17,7 +17,7 @@ public class LogoutService implements LogoutHandler{
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        jwtService.revokeToken(request);
+        jwtService.blackListToken(request);
     }
     
 }

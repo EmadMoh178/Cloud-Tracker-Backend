@@ -15,7 +15,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.example.cloud_tracker.dto.UserDTO;
-import com.example.cloud_tracker.dto.UserUpdateDTO;
 import com.example.cloud_tracker.model.JwtResponse;
 import com.example.cloud_tracker.model.User;
 import com.example.cloud_tracker.repository.UserRepository;
@@ -180,7 +179,7 @@ public class UserServiceTest {
     public void testGetCurrentUser() {
         // Mock UserDetails
         UserDetails userDetails = new User(
-                new UserDTO("test@example.com", "password", null)
+                new UserDTO("test@example.com", "password", null,null)
         );
 
         // Mock the SecurityContext
@@ -191,7 +190,7 @@ public class UserServiceTest {
 
         // Mock UserRepository response
         User expectedUser = new User(
-                new UserDTO("test@example.com", "password", null)
+                new UserDTO("test@example.com", "password", null,null)
         );
         when(userRepository.findByEmail("test@example.com")).thenReturn(expectedUser);
 
@@ -204,7 +203,7 @@ public class UserServiceTest {
     void testGetCurrentUserName() {
         // Mocking getCurrentUser() method
         User currentUser = new User(
-                new UserDTO("test@example.com", "password", "name")
+                new UserDTO("test@example.com", "password", "name",null)
         );
 
         // Create a spy of UserService to partially mock it, allowing us to mock specific methods while keeping the rest intact
@@ -220,7 +219,7 @@ public class UserServiceTest {
     void testGetCurrentUserProfilePicture() {
         // Mocking getCurrentUser() method
         User currentUser = new User(
-                new UserDTO("test@example.com", "password", "name")
+                new UserDTO("test@example.com", "password", "name",null)
         );
         currentUser.setImage("img");
 
@@ -237,7 +236,7 @@ public class UserServiceTest {
     void testGetCurrentUserEmail() {
         // Mocking getCurrentUser() method
         User currentUser = new User(
-                new UserDTO("test@example.com", "password", "name")
+                new UserDTO("test@example.com", "password", "name",null)
         );
 
         // Create a spy of UserService to partially mock it, allowing us to mock specific methods while keeping the rest intact
@@ -251,7 +250,7 @@ public class UserServiceTest {
 
     @Test
     public void testUpdateProfileSuccess(){
-        UserUpdateDTO userUpdateDTO = new UserUpdateDTO("test@gmail.com",
+        UserDTO userUpdateDTO = new UserDTO("test@gmail.com",
         "12345",
         "test",
         "image.jpg");
@@ -270,7 +269,7 @@ public class UserServiceTest {
 
     @Test
     public void testUpdateProfileFixedEmail(){
-        UserUpdateDTO userUpdateDTO = new UserUpdateDTO("test@test.com",
+        UserDTO userUpdateDTO = new UserDTO("test@test.com",
         "12345",
         "test",
         "image.jpg");
@@ -289,7 +288,7 @@ public class UserServiceTest {
 
     @Test
     public void testUpdateProfileFailed(){
-        UserUpdateDTO userUpdateDTO = new UserUpdateDTO("test@gmail.com",
+        UserDTO userUpdateDTO = new UserDTO("test@gmail.com",
         "12345",
         "test",
         "image.jpg");

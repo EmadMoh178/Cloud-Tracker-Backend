@@ -1,7 +1,6 @@
 package com.example.cloud_tracker.controller;
 
 import com.example.cloud_tracker.dto.UserDTO;
-import com.example.cloud_tracker.dto.UserUpdateDTO;
 import com.example.cloud_tracker.model.JwtResponse;
 import com.example.cloud_tracker.model.User;
 import com.example.cloud_tracker.service.UserService;
@@ -57,8 +56,8 @@ public class UserController {
   }
 
   @PutMapping("/edit-profile")
-  public ResponseEntity<User> editProfile(@RequestBody UserUpdateDTO updateDTO){
-    User user = userService.editProfile(updateDTO);
+  public ResponseEntity<User> editProfile(@RequestBody UserDTO userDTO){
+    User user = userService.editProfile(userDTO);
     return ResponseEntity.ok(user);
   }
 }

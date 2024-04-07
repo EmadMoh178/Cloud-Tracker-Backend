@@ -50,7 +50,7 @@ public class JwtService {
         return blackListedTokensRepository.existsByToken(token);
     }
     
-    public void revokeToken(HttpServletRequest request){
+    public void blackListToken(HttpServletRequest request){
         final String authHeader = request.getHeader("Authorization");
         if(authHeader == null || ! authHeader.startsWith("Bearer ")){
             return;
