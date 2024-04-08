@@ -20,4 +20,5 @@ public class UserDTO {
   private String password;
 
   private String name;
+  private String image; 
 }

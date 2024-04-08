@@ -171,6 +171,12 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.7</version> <!-- Use the latest version -->
+				<configuration>
+					<excludes>
+						<exclude>com/example/cloud_tracker/dto/**</exclude>
+						<exclude>com/example/cloud_tracker/model/**</exclude>
+					</excludes>
+				</configuration>
                 <executions>
                     <execution>
                         <goals>

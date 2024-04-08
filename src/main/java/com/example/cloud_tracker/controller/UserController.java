@@ -54,4 +54,10 @@ public class UserController {
     String email = userService.getCurrentUserEmail();
     return ResponseEntity.ok(email);
   }
+
+  @PutMapping("/edit-profile")
+  public ResponseEntity<User> editProfile(@RequestBody UserDTO userDTO){
+    User user = userService.editProfile(userDTO);
+    return ResponseEntity.ok(user);
+  }
 }

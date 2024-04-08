@@ -88,4 +88,19 @@ public class UserService implements UserDetailsService {
     User currentUser = getCurrentUser();
     return currentUser.getEmail();
   }
+  
+  public User editProfile(UserDTO updateDTO){
+    User user = getCurrentUser();
+    if (userRepository.findByEmail(updateDTO.getEmail()) != null 
+        && !user.getEmail().equals(updateDTO.getEmail())) {
+        throw new IllegalArgumentException("Email already exists");
+    }
+    user.setName(updateDTO.getName());
+    user.setEmail(updateDTO.getEmail());
+    user.setPassword(bCryptPasswordEncoder.encode(updateDTO.getPassword()));
+    user.setImage(updateDTO.getImage());
+    userRepository.save(user);
+    return user;
+   }
+
 }

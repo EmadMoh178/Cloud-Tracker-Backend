@@ -19,6 +19,8 @@ import com.example.cloud_tracker.model.JwtResponse;
 import com.example.cloud_tracker.model.User;
 import com.example.cloud_tracker.repository.UserRepository;
 
+import init.UserInit;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -177,7 +179,7 @@ public class UserServiceTest {
     public void testGetCurrentUser() {
         // Mock UserDetails
         UserDetails userDetails = new User(
-                new UserDTO("test@example.com", "password", null)
+                new UserDTO("test@example.com", "password", null,null)
         );
 
         // Mock the SecurityContext
@@ -188,7 +190,7 @@ public class UserServiceTest {
 
         // Mock UserRepository response
         User expectedUser = new User(
-                new UserDTO("test@example.com", "password", null)
+                new UserDTO("test@example.com", "password", null,null)
         );
         when(userRepository.findByEmail("test@example.com")).thenReturn(expectedUser);
 
@@ -201,7 +203,7 @@ public class UserServiceTest {
     void testGetCurrentUserName() {
         // Mocking getCurrentUser() method
         User currentUser = new User(
-                new UserDTO("test@example.com", "password", "name")
+                new UserDTO("test@example.com", "password", "name",null)
         );
 
         // Create a spy of UserService to partially mock it, allowing us to mock specific methods while keeping the rest intact
@@ -217,7 +219,7 @@ public class UserServiceTest {
     void testGetCurrentUserProfilePicture() {
         // Mocking getCurrentUser() method
         User currentUser = new User(
-                new UserDTO("test@example.com", "password", "name")
+                new UserDTO("test@example.com", "password", "name",null)
         );
         currentUser.setImage("img");
 
@@ -234,7 +236,7 @@ public class UserServiceTest {
     void testGetCurrentUserEmail() {
         // Mocking getCurrentUser() method
         User currentUser = new User(
-                new UserDTO("test@example.com", "password", "name")
+                new UserDTO("test@example.com", "password", "name",null)
         );
 
         // Create a spy of UserService to partially mock it, allowing us to mock specific methods while keeping the rest intact
@@ -245,4 +247,62 @@ public class UserServiceTest {
         String email = userServiceSpy.getCurrentUserEmail();
         assertEquals("test@example.com", email);
     }
+
+    @Test
+    public void testUpdateProfileSuccess(){
+        UserDTO userUpdateDTO = new UserDTO("test@gmail.com",
+        "12345",
+        "test",
+        "image.jpg");
+        User user = UserInit.createUser();
+
+        UserService userServiceSpy = Mockito.spy(userService);
+        Mockito.doReturn(user).when(userServiceSpy).getCurrentUser();
+
+        when(userRepository.findByEmail(userUpdateDTO.getEmail())).thenReturn(null);
+        when(bCryptPasswordEncoder.encode(userUpdateDTO.getPassword())).thenReturn(userUpdateDTO.getPassword());
+        
+        User actualUser = new User(1,userUpdateDTO.getEmail(),userUpdateDTO.getPassword(),userUpdateDTO.getName(),userUpdateDTO.getImage(),null);
+        User user2 = userServiceSpy.editProfile(userUpdateDTO);
+        assertEquals(actualUser, user2);
+    }
+
+    @Test
+    public void testUpdateProfileFixedEmail(){
+        UserDTO userUpdateDTO = new UserDTO("test@test.com",
+        "12345",
+        "test",
+        "image.jpg");
+        User user = UserInit.createUser();
+
+        UserService userServiceSpy = Mockito.spy(userService);
+        Mockito.doReturn(user).when(userServiceSpy).getCurrentUser();
+
+        when(userRepository.findByEmail(userUpdateDTO.getEmail())).thenReturn(user);
+        when(bCryptPasswordEncoder.encode(userUpdateDTO.getPassword())).thenReturn(userUpdateDTO.getPassword());
+        
+        User actualUser = new User(1,userUpdateDTO.getEmail(),userUpdateDTO.getPassword(),userUpdateDTO.getName(),userUpdateDTO.getImage(),null);
+        User user2 = userServiceSpy.editProfile(userUpdateDTO);
+        assertEquals(actualUser, user2);
+    }
+
+    @Test
+    public void testUpdateProfileFailed(){
+        UserDTO userUpdateDTO = new UserDTO("test@gmail.com",
+        "12345",
+        "test",
+        "image.jpg");
+        User user = UserInit.createUser();
+
+        UserService userServiceSpy = Mockito.spy(userService);
+        Mockito.doReturn(user).when(userServiceSpy).getCurrentUser();
+        
+        when(userRepository.findByEmail(userUpdateDTO.getEmail())).thenReturn(user);
+        when(bCryptPasswordEncoder.encode(userUpdateDTO.getPassword())).thenReturn(userUpdateDTO.getPassword());
+        
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userServiceSpy.editProfile(userUpdateDTO));
+        assertEquals("Email already exists", exception.getMessage());
+    }
+
+
 }
