@@ -15,25 +15,26 @@ public class BlogService {
     @Autowired
     private BlogRepository blogRepository;
 
-    public ResponseEntity<String> saveBlog(String htmlContent) {
-        if(htmlContent == null)
+    public ResponseEntity<String> saveBlog(String htmlContent, String title) {
+        if (htmlContent == null)
             throw new IllegalArgumentException("htmlContent cannot be null");
-        
+
+        if (title == null)
+            throw new IllegalArgumentException("title cannot be null");
+
         Blog blog = new Blog();
         blog.setHtmlContent(htmlContent);
+        blog.setTitle(title);
         blogRepository.save(blog);
         return ResponseEntity.ok("Blog saved successfully");
     }
 
-    public ArrayList<String> getBlogs() {
-        ArrayList<String> blogs = new ArrayList<>();
-        List<Blog> blog = blogRepository.findAll();
-        for (Blog b : blog) {
-            blogs.add(b.getHtmlContent());
-        }
-        return blogs;
+    public List<Blog> getBlogs() {
+
+        return blogRepository.findAll();
     }
-    public Optional <Blog> getBlogById (int id){
+
+    public Optional<Blog> getBlogById(int id) {
         return blogRepository.findById(id);
     }
 }

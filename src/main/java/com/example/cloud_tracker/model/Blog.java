@@ -21,6 +21,7 @@ public class Blog {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
 
+  private String title;
   @Lob private String htmlContent;
 
   // Getters and setters

@@ -8,12 +8,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import static org.mockito.Mockito.*;
 
 class BlogControllerTest {
@@ -30,62 +32,56 @@ class BlogControllerTest {
     }
 
     @Test
-    void saveBlog() {
+    void saveBlogTest() {
         BlogDTO blogDTO = new BlogDTO();
-        blogDTO.setHtmlContent("<p>Test content</p>");
+        blogDTO.setHtmlContent("<html><body>Test</body></html>");
+        blogDTO.setTitle("Test Title");
 
-        ResponseEntity<String> expectedResponse = ResponseEntity.ok("Blog saved successfully");
+        ResponseEntity<String> expectedResponse = new ResponseEntity<>("Success", HttpStatus.OK);
 
-        when(blogService.saveBlog(anyString())).thenReturn(expectedResponse);
+        when(blogService.saveBlog(blogDTO.getHtmlContent(), blogDTO.getTitle())).thenReturn(expectedResponse);
 
-        ResponseEntity<String> response = blogController.saveBlog(blogDTO);
+        ResponseEntity<String> actualResponse = blogController.saveBlog(blogDTO);
 
-        assertEquals(expectedResponse, response);
-        verify(blogService, times(1)).saveBlog(anyString());
+        assertEquals(expectedResponse, actualResponse);
     }
 
     @Test
-    void getBlog() {
-        ArrayList<String> expectedBlogs = new ArrayList<>();
-        expectedBlogs.add("<p>Blog 1</p>");
-        expectedBlogs.add("<p>Blog 2</p>");
+    void getBlogsTest() {
+        List<Blog> expectedBlogs = new ArrayList<>();
+        expectedBlogs.add(new Blog(1, "Title", "<html><body>Content</body></html>"));
 
         when(blogService.getBlogs()).thenReturn(expectedBlogs);
 
-        ArrayList<String> response = blogController.getBlogs();
+        List<Blog> actualBlogs = blogController.getBlogs();
 
-        assertEquals(expectedBlogs, response);
-        verify(blogService, times(1)).getBlogs();
+        assertEquals(expectedBlogs, actualBlogs);
     }
 
     @Test
-    void getBlogById_existingId() {
-        int id = 1;
-        Blog blog = new Blog();
-        blog.setId(id);
-        blog.setHtmlContent("<p>Test content</p>");
+    void getBlogByIdTest() {
+        int blogId = 1;
+        Blog expectedBlog = new Blog(blogId, "Title", "<html><body>Content</body></html>");
 
-        when(blogService.getBlogById(id)).thenReturn(Optional.of(blog));
+        when(blogService.getBlogById(blogId)).thenReturn(Optional.of(expectedBlog));
 
-        ResponseEntity<Blog> expectedResponse = ResponseEntity.ok(blog);
+        ResponseEntity<Blog> expectedResponse = ResponseEntity.ok(expectedBlog);
 
-        ResponseEntity<Blog> response = blogController.getBlogById(id);
+        ResponseEntity<Blog> actualResponse = blogController.getBlogById(blogId);
 
-        assertEquals(expectedResponse, response);
-        verify(blogService, times(1)).getBlogById(id);
+        assertEquals(expectedResponse, actualResponse);
     }
 
     @Test
-    void getBlogById_nonExistingId() {
-        int id = 1;
+    void getBlogByIdNotFoundTest() {
+        int blogId = 1;
 
-        when(blogService.getBlogById(id)).thenReturn(Optional.empty());
+        when(blogService.getBlogById(blogId)).thenReturn(Optional.empty());
 
         ResponseEntity<Blog> expectedResponse = ResponseEntity.notFound().build();
 
-        ResponseEntity<Blog> response = blogController.getBlogById(id);
+        ResponseEntity<Blog> actualResponse = blogController.getBlogById(blogId);
 
-        assertEquals(expectedResponse, response);
-        verify(blogService, times(1)).getBlogById(id);
+        assertEquals(expectedResponse, actualResponse);
     }
 }
