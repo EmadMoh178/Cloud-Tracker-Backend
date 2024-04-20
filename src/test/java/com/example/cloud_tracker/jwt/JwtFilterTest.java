@@ -36,7 +36,7 @@ public class JwtFilterTest {
     private UserDetailsServiceImpl userDetailsService;
     @InjectMocks
     private JwtFilter jwtFilter;
-    
+
     @BeforeEach
     public void setUp() {
         jwtService = mock(JwtService.class);
@@ -45,30 +45,29 @@ public class JwtFilterTest {
         jwtFilter.setJwtService(jwtService);
         jwtFilter.setUserDetailsService(userDetailsService);
     }
-    
 
     @Test
     public void testShouldNotFilter() throws ServletException {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        
+
         request.setRequestURI("/test");
         assertFalse(jwtFilter.shouldNotFilter(request));
-        
+
         request.setRequestURI("/webjars/some-resource");
         assertTrue(jwtFilter.shouldNotFilter(request));
-        
+
         request.setRequestURI("/index.html");
         assertTrue(jwtFilter.shouldNotFilter(request));
-        
+
         request.setRequestURI("/signup");
         assertTrue(jwtFilter.shouldNotFilter(request));
-        
+
         request.setRequestURI("/signin");
         assertTrue(jwtFilter.shouldNotFilter(request));
-        
+
         request.setRequestURI("/");
         assertTrue(jwtFilter.shouldNotFilter(request));
-        
+
         request.setRequestURI("/welcome.html");
         assertTrue(jwtFilter.shouldNotFilter(request));
 
@@ -167,5 +166,5 @@ public class JwtFilterTest {
         verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT Token is not valid");
         verifyNoInteractions(filterChain);
     }
-    
+
 }
