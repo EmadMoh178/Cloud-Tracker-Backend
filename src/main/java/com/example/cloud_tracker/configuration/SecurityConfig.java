@@ -18,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.web.filter.CorsFilter;
 
 /*
  * the explaination of the crsf and how it work is :
@@ -36,9 +37,12 @@ public class SecurityConfig {
 
     private final LogoutHandler logoutHandler;
 
-    public SecurityConfig(JwtFilter jwtFilter,LogoutHandler logoutHandler) {
+    private final CorsFilter corsFilter;
+
+    public SecurityConfig(JwtFilter jwtFilter,LogoutHandler logoutHandler,CorsFilter corsFilter) {
         this.jwtFilter = jwtFilter;
         this.logoutHandler=logoutHandler;
+        this.corsFilter=corsFilter;
     }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -47,7 +51,7 @@ public class SecurityConfig {
 
         http
 
-                .cors(cors -> cors.configurationSource(new CorsConfig()))
+                .addFilterBefore(corsFilter, CorsFilter.class)
 //
 //        // i put the csrf config in the csrfconfig class and i will call it here
 //        .csrf((csrf) -> csrf.getClass().equals(CsrfConfig.class));
